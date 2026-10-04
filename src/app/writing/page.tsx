@@ -9,7 +9,9 @@ export const metadata: Metadata = { title: "Writing" };
 export default async function WritingPage({ searchParams }: PageProps<"/writing">) {
   const { tag } = await searchParams;
   const all = await getEntriesOf("Writing");
-  const tags = [...new Set(all.flatMap((e) => e.tags))].sort();
+  const order = ["AI", "Development", "Product", "Learning", "Thoughts"];
+  const rank = (t: string) => (order.includes(t) ? order.indexOf(t) : order.length);
+  const tags = [...new Set(all.flatMap((e) => e.tags))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
   const current = typeof tag === "string" && tags.includes(tag) ? tag : null;
   const entries = current ? all.filter((e) => e.tags.includes(current)) : all;
 

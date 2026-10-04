@@ -174,12 +174,15 @@ async function isPublished(pageId: string) {
   return (await getEntries()).some((e) => normalizeId(e.id) === normalizeId(pageId));
 }
 
-export async function notionFileUrl(kind: "cover" | "block", id: string): Promise<string | null> {
+type NotionFile = { url: string; expiry_time: string };
+
+export async function notionFileUrl(kind: "cover" | "block", id: string): Promise<NotionFile | null> {
+  if (!/^[0-9a-f]{32}$/i.test(normalizeId(id))) return null;
   try {
     if (kind === "cover") {
       const page = await limit(() => notion().pages.retrieve({ page_id: id }));
       if (!isFullPage(page) || page.cover?.type !== "file" || !(await isPublished(page.id))) return null;
-      return page.cover.file.url;
+      return page.cover.file;
     }
     const block = await limit(() => notion().blocks.retrieve({ block_id: id }));
     if (!isFullBlock(block) || block.type !== "image" || block.image.type !== "file") return null;
@@ -190,7 +193,7 @@ export async function notionFileUrl(kind: "cover" | "block", id: string): Promis
       parent = up.parent;
     }
     if (parent.type !== "page_id" || !(await isPublished(parent.page_id))) return null;
-    return block.image.file.url;
+    return block.image.file;
   } catch {
     return null;
   }

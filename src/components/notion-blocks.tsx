@@ -35,7 +35,7 @@ async function Code({ code, language }: { code: string; language: string }) {
         <CopyButton text={code} />
       </div>
       <div
-        className="overflow-x-auto p-5 pt-10 font-mono text-[0.875rem] leading-relaxed [&_pre]:outline-none"
+        className="overflow-x-auto p-5 pt-10 font-mono text-[0.875rem] leading-relaxed"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     </div>
@@ -89,6 +89,7 @@ type Group =
 function group(blocks: Block[], photo: boolean): Group[] {
   const out: Group[] = [];
   for (const b of blocks) {
+    if (b.type === "paragraph" && !b.paragraph.rich_text.length && !b.children?.length) continue;
     const last = out.at(-1);
     const kind =
       b.type === "bulleted_list_item" ? "ul" : b.type === "numbered_list_item" ? "ol" : photo && b.type === "image" ? "photos" : null;
@@ -107,28 +108,42 @@ function Children({ block }: { block: Block }) {
 function BlockView({ block: b }: { block: Block }) {
   switch (b.type) {
     case "paragraph":
-      return b.paragraph.rich_text.length ? (
-        <p>
-          <RichText text={b.paragraph.rich_text} />
-        </p>
-      ) : null;
+      return (
+        <>
+          {b.paragraph.rich_text.length > 0 && (
+            <p>
+              <RichText text={b.paragraph.rich_text} />
+            </p>
+          )}
+          <Children block={b} />
+        </>
+      );
     case "heading_1":
       return (
-        <h2 className="text-[1.75rem] leading-[1.3] font-semibold text-text">
-          <RichText text={b.heading_1.rich_text} />
-        </h2>
+        <>
+          <h2 className="text-[1.75rem] leading-[1.3] font-semibold text-text">
+            <RichText text={b.heading_1.rich_text} />
+          </h2>
+          <Children block={b} />
+        </>
       );
     case "heading_2":
       return (
-        <h2 className="text-[1.5rem] leading-[1.3] font-semibold text-text">
-          <RichText text={b.heading_2.rich_text} />
-        </h2>
+        <>
+          <h2 className="text-[1.5rem] leading-[1.3] font-semibold text-text">
+            <RichText text={b.heading_2.rich_text} />
+          </h2>
+          <Children block={b} />
+        </>
       );
     case "heading_3":
       return (
-        <h3 className="text-[1.2rem] leading-[1.4] font-semibold text-text">
-          <RichText text={b.heading_3.rich_text} />
-        </h3>
+        <>
+          <h3 className="text-[1.2rem] leading-[1.4] font-semibold text-text">
+            <RichText text={b.heading_3.rich_text} />
+          </h3>
+          <Children block={b} />
+        </>
       );
     case "bulleted_list_item":
     case "numbered_list_item": {

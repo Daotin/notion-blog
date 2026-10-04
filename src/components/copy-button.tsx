@@ -10,7 +10,11 @@ export function CopyButton({ text }: { text: string }) {
       type="button"
       aria-label="Copy code"
       onClick={async () => {
-        await navigator.clipboard.writeText(text);
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          return;
+        }
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
       }}

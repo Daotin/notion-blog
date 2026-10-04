@@ -53,7 +53,7 @@ function PhotoTile({ entry, className, sizes }: { entry: Entry; className: strin
       {entry.cover && (
         <Img
           src={entry.cover}
-          alt={entry.title}
+          alt=""
           fill
           sizes={sizes}
           className="transition duration-250 ease-out-quint group-hover:scale-[1.02]"

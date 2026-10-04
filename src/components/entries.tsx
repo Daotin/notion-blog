@@ -86,7 +86,7 @@ export function ProjectCard({
         <div className={cn("relative overflow-hidden bg-surface-muted", coverClass)}>
           <Img
             src={entry.cover}
-            alt={entry.title}
+            alt=""
             fill
             sizes={sizes}
             className="transition duration-250 ease-out-quint group-hover:scale-[1.02]"
