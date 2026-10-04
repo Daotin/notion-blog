@@ -36,6 +36,7 @@ export const sectionPath: Record<EntryType, string> = {
 };
 
 const REVALIDATE = 600;
+export const NOTION_TAG = "notion";
 const DATA_SOURCE_ID = "0b416b3d-a189-4a33-b5ca-b2ae17b1c647";
 
 let client: Client | undefined;
@@ -114,7 +115,7 @@ async function fetchChildren(id: string): Promise<Block[]> {
   );
 }
 
-export const getBlocks = unstable_cache(fetchChildren, ["notion-blocks"], { revalidate: REVALIDATE });
+export const getBlocks = unstable_cache(fetchChildren, ["notion-blocks"], { revalidate: REVALIDATE, tags: [NOTION_TAG] });
 
 export function findImage(blocks: Block[]): ImageBlockObjectResponse | undefined {
   for (const b of blocks) {
@@ -146,7 +147,7 @@ export const getEntries = unstable_cache(
     return entries;
   },
   ["notion-entries"],
-  { revalidate: REVALIDATE },
+  { revalidate: REVALIDATE, tags: [NOTION_TAG] },
 );
 
 export async function getEntriesOf(type: EntryType) {
