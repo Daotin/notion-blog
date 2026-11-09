@@ -8,7 +8,7 @@ import { getBlocks, getEntriesOf, getEntry } from "@/lib/notion";
 export const revalidate = 600;
 
 export async function generateStaticParams() {
-  return (await getEntriesOf("Writing")).map((e) => ({ slug: e.slug }));
+  return (await getEntriesOf("Writing")).slice(0, 20).map((e) => ({ slug: e.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/writing/[slug]">): Promise<Metadata> {
