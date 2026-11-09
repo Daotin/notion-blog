@@ -120,10 +120,10 @@ export default async function Home() {
         <p className="mt-3 max-w-[36ch] text-[1.25rem] leading-relaxed text-text-body">{site.intro}</p>
         <div className="mt-10 flex flex-wrap gap-3">
           <Link
-            href="/projects"
+            href="/writing"
             className="inline-flex h-10 items-center rounded-[10px] bg-text px-5 text-[0.9375rem] font-medium text-bg transition-opacity duration-200 ease-out-quint hover:opacity-85"
           >
-            Explore my work
+            Read my writing
           </Link>
           <Link
             href="/about"

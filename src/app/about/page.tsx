@@ -28,21 +28,6 @@ export default function AboutPage() {
         </section>
 
         <section className="mt-24">
-          <h2 className={heading}>Selected experience</h2>
-          <ul className="space-y-6">
-            {about.experience.map((x) => (
-              <li key={x.time + x.role} className="grid gap-1 sm:grid-cols-[9rem_1fr] sm:gap-6">
-                <span className="text-sm text-muted tabular-nums sm:pt-0.5">{x.time}</span>
-                <span>
-                  <span className="block font-medium text-text">{x.role}</span>
-                  <span className="mt-1 block text-text-body">{x.text}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="mt-24">
           <h2 className={heading}>Contact</h2>
           <ul className="flex flex-wrap gap-x-8 gap-y-3">
             <li>
