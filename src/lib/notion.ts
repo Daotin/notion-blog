@@ -24,6 +24,8 @@ export type Entry = {
   location: string;
   featured: boolean;
   cover: string | null;
+  series: string | null;
+  seriesOrder: number | null;
 };
 
 export type Block = BlockObjectResponse & { children?: Block[] };
@@ -98,6 +100,8 @@ function toEntry(page: PageObjectResponse): Entry | null {
       : page.cover.type === "external"
         ? page.cover.external.url
         : `/img/cover/${page.id}`,
+    series: p["系列"]?.type === "select" ? (p["系列"].select?.name ?? null) : null,
+    seriesOrder: p["序号"]?.type === "number" ? p["序号"].number : null,
   };
 }
 
@@ -152,6 +156,17 @@ export const getEntries = unstable_cache(
 
 export async function getEntriesOf(type: EntryType) {
   return (await getEntries()).filter((e) => e.type === type);
+}
+
+export async function getSeries() {
+  const writing = (await getEntriesOf("Writing")).filter((e) => e.series);
+  return [...Map.groupBy(writing, (e) => e.series as string)]
+    .map(([name, posts]) => ({
+      name,
+      posts: posts.toSorted((a, b) => (a.seriesOrder ?? Infinity) - (b.seriesOrder ?? Infinity)),
+      updated: posts[0].date,
+    }))
+    .toSorted((a, b) => (b.updated ?? "").localeCompare(a.updated ?? ""));
 }
 
 export async function getEntry(type: EntryType, slug: string) {

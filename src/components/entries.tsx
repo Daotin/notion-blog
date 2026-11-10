@@ -34,6 +34,12 @@ export function Tag({ children, active, href }: { children: React.ReactNode; act
   );
 }
 
+export const seriesHref = (name: string) => `/series/${encodeURIComponent(name)}`;
+
+export function SeriesTag({ name, order }: { name: string; order?: number | null }) {
+  return <Tag href={seriesHref(name)}>📚 {order ? `${name} · 第 ${order} 篇` : name}</Tag>;
+}
+
 export function PostList({ entries }: { entries: Entry[] }) {
   return (
     <ul className="border-t border-border">
@@ -45,6 +51,7 @@ export function PostList({ entries }: { entries: Entry[] }) {
             </Link>
             <span className="hidden truncate text-[0.9375rem] text-muted md:block">{e.summary}</span>
             <span className="flex flex-wrap items-center gap-1.5 md:hidden">
+              {e.series && <SeriesTag name={e.series} />}
               {e.tags.map((t) => (
                 <Tag key={t} href={tagHref(t)}>
                   {t}
@@ -52,7 +59,8 @@ export function PostList({ entries }: { entries: Entry[] }) {
               ))}
               <span className="text-sm text-muted tabular-nums">{formatDate(e.date)}</span>
             </span>
-            <span className="hidden gap-1.5 md:flex">
+            <span className="hidden flex-wrap gap-1.5 md:flex">
+              {e.series && <SeriesTag name={e.series} />}
               {e.tags.map((t) => (
                 <Tag key={t} href={tagHref(t)}>
                   {t}

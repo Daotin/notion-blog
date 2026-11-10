@@ -12,6 +12,7 @@ export const site = {
   ],
   sections: {
     writing: "前端开发、工程化和 AI 编程的笔记与总结。",
+    series: "按主题整理的系列文章，适合从头读到尾。",
     projects: "做过的项目。",
     photography: "拍过的照片。",
     life: "生活记录。",

@@ -1,4 +1,4 @@
-import { Tag, tagHref } from "@/components/entries";
+import { SeriesTag, Tag, tagHref } from "@/components/entries";
 import { Blocks } from "@/components/notion-blocks";
 import type { Block, Entry } from "@/lib/notion";
 import { formatDate } from "@/lib/utils";
@@ -10,6 +10,7 @@ export function Article({ entry, blocks, children }: { entry: Entry; blocks: Blo
         <h1 className="text-[clamp(2rem,4vw,2.75rem)] leading-[1.15] font-semibold tracking-tight">{entry.title}</h1>
         <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-muted tabular-nums">
           <time dateTime={entry.date ?? undefined}>{formatDate(entry.date)}</time>
+          {entry.series && <SeriesTag name={entry.series} order={entry.seriesOrder} />}
           {entry.tags.map((t) => (
             <Tag key={t} href={entry.type === "Writing" ? tagHref(t) : undefined}>
               {t}

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Article } from "@/components/article";
 import { PostList } from "@/components/entries";
-import { getBlocks, getEntriesOf, getEntry } from "@/lib/notion";
+import { getBlocks, getEntriesOf, getEntry, getSeries } from "@/lib/notion";
 
 export const revalidate = 600;
 
@@ -23,8 +23,10 @@ export default async function WritingPost({ params }: PageProps<"/writing/[slug]
   if (index === -1) notFound();
   const entry = all[index];
   const blocks = await getBlocks(entry.id);
-  const newer = all[index - 1];
-  const older = all[index + 1];
+  const chain = entry.series ? (await getSeries()).find((s) => s.name === entry.series)!.posts.toReversed() : all;
+  const at = chain.findIndex((e) => e.id === entry.id);
+  const newer = chain[at - 1];
+  const older = chain[at + 1];
   const related = all.filter((e) => e.id !== entry.id && e.tags.some((t) => entry.tags.includes(t))).slice(0, 3);
 
   return (
