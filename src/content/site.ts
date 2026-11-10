@@ -6,6 +6,7 @@ export const site = {
   email: "daotin@qq.com",
   github: "https://github.com/Daotin",
   tools: "https://daotin-tools.pages.dev/",
+  pinnedSeries: ["AI Coding"],
   socials: [
     { label: "GitHub", href: "https://github.com/Daotin" },
     { label: "掘金", href: "https://juejin.cn/user/2084329777534216" },

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { container, Empty, PageHeader, seriesHref } from "@/components/entries";
+import { container, Empty, PageHeader, seriesHref, Tag } from "@/components/entries";
 import { SeriesCover } from "@/components/series";
 import { site } from "@/content/site";
 import { getSeries } from "@/lib/notion";
@@ -9,7 +9,11 @@ import { formatDate } from "@/lib/utils";
 export const metadata: Metadata = { title: "Series" };
 
 export default async function SeriesPage() {
-  const series = await getSeries();
+  const rank = (name: string) => {
+    const i = site.pinnedSeries.indexOf(name);
+    return i === -1 ? site.pinnedSeries.length : i;
+  };
+  const series = (await getSeries()).toSorted((a, b) => rank(a.name) - rank(b.name));
 
   return (
     <div className={container}>
@@ -26,7 +30,10 @@ export default async function SeriesPage() {
               >
                 <SeriesCover name={s.name} className="aspect-[16/10]" />
                 <div className="p-5">
-                  <h2 className="font-medium text-text">{s.name}</h2>
+                  <h2 className="flex items-center gap-2 font-medium text-text">
+                    {s.name}
+                    {site.pinnedSeries.includes(s.name) && <Tag>置顶</Tag>}
+                  </h2>
                   <p className="mt-1.5 text-sm text-muted tabular-nums">
                     {s.posts.length} 篇 · 更新于 {formatDate(s.updated)}
                   </p>
