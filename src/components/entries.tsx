@@ -36,8 +36,8 @@ export function Tag({ children, active, href }: { children: React.ReactNode; act
 
 export const seriesHref = (name: string) => `/series/${encodeURIComponent(name)}`;
 
-export function SeriesTag({ name, order }: { name: string; order?: number | null }) {
-  return <Tag href={seriesHref(name)}>📚 {order ? `${name} · 第 ${order} 篇` : name}</Tag>;
+export function SeriesTag({ name }: { name: string }) {
+  return <Tag href={seriesHref(name)}>📚 {name}</Tag>;
 }
 
 export function PostList({ entries }: { entries: Entry[] }) {

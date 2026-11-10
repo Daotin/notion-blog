@@ -23,7 +23,7 @@ export default async function WritingPost({ params }: PageProps<"/writing/[slug]
   if (index === -1) notFound();
   const entry = all[index];
   const blocks = await getBlocks(entry.id);
-  const chain = entry.series ? (await getSeries()).find((s) => s.name === entry.series)!.posts.toReversed() : all;
+  const chain = entry.series ? (await getSeries()).find((s) => s.name === entry.series)!.posts : all;
   const at = chain.findIndex((e) => e.id === entry.id);
   const newer = chain[at - 1];
   const older = chain[at + 1];

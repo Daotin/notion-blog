@@ -31,11 +31,10 @@ export default async function SeriesDetail({ params }: PageProps<"/series/[name]
         </Link>{" "}
         · {series.posts.length} 篇 · 更新于 {formatDate(series.updated)}
       </p>
-      <ol className="mt-10 border-t border-border">
-        {series.posts.map((e, i) => (
+      <ul className="mt-10 border-t border-border">
+        {series.posts.map((e) => (
           <li key={e.id} className="group relative border-b border-border">
             <div className="flex items-baseline gap-4 py-4">
-              <span className="w-14 shrink-0 text-sm text-muted tabular-nums">第 {e.seriesOrder ?? i + 1} 篇</span>
               <Link href={e.href} className="min-w-0 flex-1 font-medium text-text after:absolute after:inset-0 group-hover:text-muted">
                 {e.title}
               </Link>
@@ -43,7 +42,7 @@ export default async function SeriesDetail({ params }: PageProps<"/series/[name]
             </div>
           </li>
         ))}
-      </ol>
+      </ul>
     </div>
   );
 }
