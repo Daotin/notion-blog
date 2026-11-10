@@ -31,10 +31,13 @@ export default async function WritingPage({ searchParams }: PageProps<"/writing"
               </Link>
             ))}
           </nav>
+          <p className="mb-8 text-sm text-muted tabular-nums">共 {entries.length} 篇</p>
           <div className="space-y-12 pb-24">
             {[...years].map(([year, list]) => (
               <section key={year}>
-                <h2 className="mb-4 text-[0.95rem] leading-[1.4] font-medium text-muted tabular-nums">{year}</h2>
+                <h2 className="mb-4 text-[0.95rem] leading-[1.4] font-medium text-muted tabular-nums">
+                  {year} · {list.length} 篇
+                </h2>
                 <PostList entries={list} />
               </section>
             ))}
