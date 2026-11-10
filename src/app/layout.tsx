@@ -49,6 +49,10 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               Email
             </a>
             <span aria-hidden> · </span>
+            <a className="hover:text-text" href={site.tools}>
+              Tools
+            </a>
+            <span aria-hidden> · </span>
             <span>© {new Date().getFullYear()}</span>
           </footer>
         </ThemeProvider>
