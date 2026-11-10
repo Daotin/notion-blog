@@ -1,6 +1,7 @@
 "use client";
 
 import { Menu, Moon, Search as SearchIcon, Sun, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -53,7 +54,8 @@ export function Nav({ items }: { items: SearchItem[] }) {
         )}
       >
         <div className="mx-auto flex h-16 max-w-[1120px] items-center justify-between gap-6 px-5 md:px-8">
-          <Link href="/" className="font-semibold text-text" onClick={() => setMenuOpen(false)}>
+          <Link href="/" className="flex items-center gap-2.5 font-semibold text-text" onClick={() => setMenuOpen(false)}>
+            <Image src="/avatar.png" alt="" width={32} height={32} className="size-8 rounded-full" priority />
             {site.name}
           </Link>
           <nav aria-label="Main" className="hidden items-center gap-7 md:flex">

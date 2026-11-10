@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { container, Empty, PageHeader, PostList, Tag } from "@/components/entries";
+import { container, Empty, PageHeader, PostList, Tag, tagHref } from "@/components/entries";
 import { site } from "@/content/site";
 import { getEntriesOf } from "@/lib/notion";
+import { yearOf } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Writing" };
 
@@ -14,6 +15,7 @@ export default async function WritingPage({ searchParams }: PageProps<"/writing"
   const tags = [...new Set(all.flatMap((e) => e.tags))].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
   const current = typeof tag === "string" && tags.includes(tag) ? tag : null;
   const entries = current ? all.filter((e) => e.tags.includes(current)) : all;
+  const years = Map.groupBy(entries, (e) => yearOf(e.date) || "未注明年份");
 
   return (
     <div className={container}>
@@ -22,15 +24,20 @@ export default async function WritingPage({ searchParams }: PageProps<"/writing"
         <Empty />
       ) : (
         <>
-          <nav aria-label="Tags" className="-mx-5 mb-8 flex gap-2 overflow-x-auto px-5 pb-1 md:mx-0 md:px-0">
+          <nav aria-label="Tags" className="mb-12 flex flex-wrap gap-2">
             {[null, ...tags].map((t) => (
-              <Link key={t ?? "all"} href={t ? `/writing?tag=${encodeURIComponent(t)}` : "/writing"} aria-current={t === current ? "page" : undefined}>
+              <Link key={t ?? "all"} href={t ? tagHref(t) : "/writing"} aria-current={t === current ? "page" : undefined}>
                 <Tag active={t === current}>{t ?? "All"}</Tag>
               </Link>
             ))}
           </nav>
-          <div className="pb-24">
-            <PostList entries={entries} />
+          <div className="space-y-12 pb-24">
+            {[...years].map(([year, list]) => (
+              <section key={year}>
+                <h2 className="mb-4 text-[0.95rem] leading-[1.4] font-medium text-muted tabular-nums">{year}</h2>
+                <PostList entries={list} />
+              </section>
+            ))}
           </div>
         </>
       )}

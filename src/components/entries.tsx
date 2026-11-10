@@ -19,16 +19,18 @@ export function Empty() {
   return <p className="py-24 text-center text-muted">还没有公开的内容，正在写。</p>;
 }
 
-export function Tag({ children, active }: { children: React.ReactNode; active?: boolean }) {
+export const tagHref = (t: string) => `/writing?tag=${encodeURIComponent(t)}`;
+
+export function Tag({ children, active, href }: { children: React.ReactNode; active?: boolean; href?: string }) {
+  const className = cn(
+    "inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.8125rem] whitespace-nowrap",
+    active ? "bg-text text-bg" : "bg-surface-muted text-muted",
+  );
+  if (!href) return <span className={className}>{children}</span>;
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-0.5 text-[0.8125rem] whitespace-nowrap",
-        active ? "bg-text text-bg" : "bg-surface-muted text-muted",
-      )}
-    >
+    <Link href={href} className={cn(className, "relative z-10 transition-colors duration-200 ease-out-quint hover:text-text")}>
       {children}
-    </span>
+    </Link>
   );
 }
 
@@ -36,27 +38,35 @@ export function PostList({ entries }: { entries: Entry[] }) {
   return (
     <ul className="border-t border-border">
       {entries.map((e) => (
-        <li key={e.id} className="border-b border-border">
-          <Link
-            href={e.href}
-            className="group grid gap-1.5 py-4 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto_7.5rem] md:items-center md:gap-6"
-          >
-            <span className="font-medium text-text">{e.title}</span>
+        <li key={e.id} className="group relative border-b border-border">
+          <div className="grid gap-1.5 py-4 md:grid-cols-[minmax(0,2fr)_minmax(0,2fr)_auto_7.5rem] md:items-center md:gap-6">
+            <Link href={e.href} className="font-medium text-text after:absolute after:inset-0">
+              {e.title}
+            </Link>
             <span className="hidden truncate text-[0.9375rem] text-muted md:block">{e.summary}</span>
+            <span className="flex flex-wrap items-center gap-1.5 md:hidden">
+              {e.tags.map((t) => (
+                <Tag key={t} href={tagHref(t)}>
+                  {t}
+                </Tag>
+              ))}
+              <span className="text-sm text-muted tabular-nums">{formatDate(e.date)}</span>
+            </span>
             <span className="hidden gap-1.5 md:flex">
               {e.tags.map((t) => (
-                <Tag key={t}>{t}</Tag>
+                <Tag key={t} href={tagHref(t)}>
+                  {t}
+                </Tag>
               ))}
             </span>
-            <span className="flex items-center justify-between gap-2 text-sm text-muted tabular-nums">
-              <span className="md:hidden">{[...e.tags, formatDate(e.date)].filter(Boolean).join(" · ")}</span>
-              <span className="hidden md:inline">{formatDate(e.date)}</span>
+            <span className="hidden items-center justify-between gap-2 text-sm text-muted tabular-nums md:flex">
+              <span>{formatDate(e.date)}</span>
               <ArrowRight
-                className="hidden size-4 opacity-0 transition duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:opacity-100 md:block"
+                className="size-4 opacity-0 transition duration-200 ease-out-quint group-hover:translate-x-0.5 group-hover:opacity-100"
                 aria-hidden
               />
             </span>
-          </Link>
+          </div>
         </li>
       ))}
     </ul>
