@@ -145,6 +145,15 @@ function BlockView({ block: b }: { block: Block }) {
           <Children block={b} />
         </>
       );
+    case "heading_4":
+      return (
+        <>
+          <h4 className="text-[1.0625rem] leading-[1.5] font-semibold text-text">
+            <RichText text={b.heading_4.rich_text} />
+          </h4>
+          <Children block={b} />
+        </>
+      );
     case "bulleted_list_item":
     case "numbered_list_item": {
       const value = b.type === "bulleted_list_item" ? b.bulleted_list_item : b.numbered_list_item;
@@ -265,7 +274,7 @@ function BlockView({ block: b }: { block: Block }) {
 
 export function Blocks({ blocks, photo = false, className }: { blocks: Block[]; photo?: boolean; className?: string }) {
   return (
-    <div className={cn("[&>*+*]:mt-5 [&>h2]:mt-12 [&>h3]:mt-9", className)}>
+    <div className={cn("[&>*+*]:mt-5 [&>h2]:mt-12 [&>h3]:mt-9 [&>h4]:mt-7", className)}>
       {group(blocks, photo).map((g) => {
         if (g.kind === "ul")
           return (
