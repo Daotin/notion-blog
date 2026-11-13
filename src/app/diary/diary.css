@@ -741,6 +741,300 @@
   border-radius: 3px;
 }
 
+/* 统计 */
+.diary .top .acts button.on {
+  color: var(--acc);
+}
+.diary .sh {
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 12px;
+}
+.diary .sh h2 {
+  flex: none;
+  font-weight: 400;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--acc);
+}
+.diary .sh .x {
+  flex: none;
+  font-size: 14px;
+  color: var(--ink3);
+}
+.diary .sh .x:hover {
+  color: var(--ink);
+}
+.diary .rg {
+  position: relative;
+  flex: 1;
+}
+.diary .rgb {
+  font-size: 16px;
+  line-height: 1;
+  padding: 7px 12px;
+  border-radius: 15px;
+  background: var(--wash);
+  color: var(--ink);
+}
+.diary .rgb:hover {
+  background: var(--rule);
+}
+.diary .rgb span {
+  margin-left: 4px;
+  font-size: 12px;
+  color: var(--ink3);
+}
+.diary .rgm {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  width: 170px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: var(--paper);
+  border-radius: 6px;
+  padding: 6px;
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--shade) 10%, transparent),
+    0 16px 30px -18px color-mix(in oklch, var(--shade) 60%, transparent);
+}
+.diary .rgm button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.diary .rgm button:hover {
+  background: var(--wash);
+}
+.diary .rgm button.on {
+  color: var(--acc);
+}
+.diary .rgm button span {
+  font-size: 13px;
+  color: var(--ink3);
+}
+.diary .tot {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 14px;
+  padding-bottom: 6px;
+}
+.diary .tot div {
+  line-height: 1.2;
+}
+.diary .tot b {
+  font-weight: 400;
+  font-size: 30px;
+  color: var(--ink);
+}
+.diary .tot span {
+  margin-left: 4px;
+  font-size: 14px;
+  color: var(--ink3);
+}
+.diary .tot .media b {
+  font-size: 21px;
+  color: var(--ink2);
+}
+.diary .st-sec {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+}
+.diary .st-sec h4 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.diary .legend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  color: var(--ink3);
+}
+.diary .legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.diary .grid {
+  display: grid;
+  grid-template-columns: 34px repeat(31, minmax(0, 1fr));
+  gap: 3px;
+  align-items: center;
+}
+.diary .grid .ml {
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  text-align: left;
+  color: var(--ink3);
+}
+.diary .grid .ml:hover {
+  color: var(--ink);
+}
+.diary .grid .ml.cur {
+  color: var(--acc);
+}
+.diary .grid .dn {
+  font-size: 10px;
+  line-height: 1;
+  text-align: center;
+  color: var(--ink3);
+}
+.diary .grid .c {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--wash);
+}
+.diary .grid .c.no {
+  background: none;
+}
+.diary .grid .c.fu {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--wash);
+}
+.diary .legend .l1,
+.diary .grid .c.l1 {
+  background: color-mix(in oklch, var(--acc) 30%, var(--wash));
+}
+.diary .legend .l2,
+.diary .grid .c.l2 {
+  background: color-mix(in oklch, var(--acc) 52%, var(--wash));
+}
+.diary .legend .l3,
+.diary .grid .c.l3 {
+  background: color-mix(in oklch, var(--acc) 76%, var(--wash));
+}
+.diary .legend .l4,
+.diary .grid .c.l4 {
+  background: var(--acc);
+}
+.diary .grid button.c:hover {
+  box-shadow: 0 0 0 1.5px var(--ink);
+}
+.diary .grid .c.today {
+  box-shadow: inset 0 0 0 1.5px var(--acc);
+}
+.diary .gtip {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 8px));
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--paper);
+  background: var(--ink);
+  padding: 6px 9px;
+  border-radius: 3px;
+}
+.diary .tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.diary .tbl th {
+  font-weight: 400;
+  font-size: 12px;
+  text-align: right;
+  color: var(--ink3);
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.diary .tbl td {
+  text-align: right;
+  color: var(--ink2);
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--rule);
+  font-variant-numeric: tabular-nums;
+}
+.diary .tbl th:first-child,
+.diary .tbl td:first-child {
+  text-align: left;
+}
+.diary .tbl td:first-child {
+  color: var(--ink);
+}
+.diary .tbl tr:last-child td {
+  border-bottom: 0;
+}
+.diary .tbl tr.go {
+  cursor: pointer;
+}
+.diary .tbl tr.go:hover td {
+  background: var(--wash);
+}
+.diary .tbl tr.zero td {
+  color: var(--ink3);
+  opacity: 0.6;
+}
+.diary .tbl .bar {
+  display: inline-block;
+  height: 6px;
+  margin-right: 8px;
+  border-radius: 3px;
+  vertical-align: middle;
+  background: var(--acc);
+  opacity: 0.45;
+}
+.diary .best li {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 4px 12px;
+  padding: 9px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.diary .best li:hover {
+  background: var(--wash);
+}
+.diary .best .k {
+  grid-row: span 2;
+  font-size: 13px;
+  line-height: 2.3;
+  color: var(--ink3);
+}
+.diary .best .v {
+  line-height: 1.3;
+}
+.diary .best .v b {
+  font-weight: 400;
+  font-size: 26px;
+  color: var(--acc);
+}
+.diary .best .v span {
+  margin-left: 4px;
+  font-size: 14px;
+  color: var(--ink3);
+}
+.diary .best p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.diary .best p .dt {
+  margin-right: 10px;
+  color: var(--ink3);
+}
+
 /* 登录、读取失败 */
 .diary .gate {
   margin: auto;
@@ -828,6 +1122,22 @@
   }
   .diary .shots img {
     height: 180px;
+  }
+  .diary .sh {
+    gap: 12px;
+  }
+  .diary .sh h2 {
+    font-size: 32px;
+  }
+  .diary .tot b {
+    font-size: 26px;
+  }
+  .diary .grid {
+    grid-template-columns: 28px repeat(31, minmax(0, 1fr));
+    gap: 2px;
+  }
+  .diary .grid .ml {
+    font-size: 11px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

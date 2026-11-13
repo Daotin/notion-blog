@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, LogOut, Moon, Sun } from "lucide-react";
+import { Bell, ChartColumn, LogOut, Moon, Sun } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { DiaryDay, DiaryMedia, DiaryProblem } from "@/lib/diary/data";
 import { plainText, renderBody, splitEntries } from "@/lib/diary/markdown";
+import { DiaryStats } from "./diary-stats";
 
 const HUE = [0, 255, 345, 125, 8, 150, 200, 275, 100, 75, 30, 50, 175];
 const WEEK = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
@@ -65,7 +66,8 @@ export function DiaryApp({
   today: string;
   notionUrl: string | null;
 }) {
-  const param = useSearchParams().get("d");
+  const search = useSearchParams();
+  const param = search.get("d");
   const cur = param && validDate(param) ? param : today;
   const byDate = useMemo(() => new Map(days.map((d) => [d.date, d])), [days]);
   const keys = useMemo(() => [...new Set([...days.map((d) => d.date), today])].sort(), [days, today]);
@@ -77,6 +79,8 @@ export function DiaryApp({
     return c;
   }, [dataKeys]);
   const rows = useMemo(() => railRows(count, today, keys[0]), [count, today, keys]);
+  const sParam = search.get("s");
+  const range = sParam === null ? null : /^\d{4}$/.test(sParam) && dataKeys.some((k) => k.startsWith(`${sParam}-`)) ? sParam : "all";
 
   const [shown, setShown] = useState(cur);
   const [view, setView] = useState(cur.slice(0, 7));
@@ -99,11 +103,30 @@ export function DiaryApp({
   const scrollRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
+  const href = (k: string, s: string | null) => {
+    const q = new URLSearchParams();
+    if (k !== today) q.set("d", k);
+    if (s) q.set("s", s);
+    const qs = q.toString();
+    return qs ? `/diary?${qs}` : "/diary";
+  };
   const go = (k: string | undefined) => {
     if (!k) return;
     setShowIndex(false);
-    if (k === cur) return;
-    window.history.pushState(null, "", k === today ? "/diary" : `/diary?d=${k}`);
+    if (k === cur) {
+      if (range === null) return;
+      setView(k.slice(0, 7));
+    }
+    window.history.pushState(null, "", href(k, null));
+  };
+  const toggleStats = () => {
+    setShowIndex(false);
+    window.history.pushState(null, "", href(cur, range === null ? "all" : null));
+  };
+  const showMonth = (ym: string) => {
+    setView(ym);
+    setInput("");
+    if (listRef.current) listRef.current.scrollTop = 0;
   };
   const day = byDate.get(cur);
   const images = day?.media.filter((m) => m.type === "image") ?? [];
@@ -129,6 +152,10 @@ export function DiaryApp({
         if (e.key === "Escape") setZoom(null);
         if (e.key === "ArrowLeft") setZoom((zoom + images.length - 1) % images.length);
         if (e.key === "ArrowRight") setZoom((zoom + 1) % images.length);
+        return;
+      }
+      if (range !== null) {
+        if (e.key === "Escape") toggleStats();
         return;
       }
       if (e.key === "ArrowLeft") go(prevKey);
@@ -173,7 +200,7 @@ export function DiaryApp({
         <button
           key={k}
           type="button"
-          className={`${has ? "has" : "off"} ${k === today ? "today" : ""} ${k === cur ? "sel" : ""}`}
+          className={`${has ? "has" : "off"} ${k === today ? "today" : ""} ${k === cur && range === null ? "sel" : ""}`}
           onClick={() => go(k)}
         >
           <b>{d}</b>
@@ -199,6 +226,16 @@ export function DiaryApp({
         <span className="acts">
           <button className="menu" type="button" onClick={() => setShowIndex((s) => !s)}>
             目录
+          </button>
+          <button
+            type="button"
+            className={range !== null ? "on" : ""}
+            aria-label="统计"
+            title="统计"
+            aria-pressed={range !== null}
+            onClick={toggleStats}
+          >
+            <ChartColumn size={15} strokeWidth={1.6} />
           </button>
           <button className="bell" type="button" aria-label="通知" title="通知" onClick={() => setNotesOpen((o) => !o)}>
             <Bell size={15} strokeWidth={1.6} />
@@ -247,11 +284,7 @@ export function DiaryApp({
                   key={r.ym}
                   className={`mo ${r.n ? "has" : ""} ${r.ym === view ? "cur" : ""}`}
                   style={{ "--n": r.n } as CSSProperties}
-                  onClick={() => {
-                    setView(r.ym);
-                    setInput("");
-                    if (listRef.current) listRef.current.scrollTop = 0;
-                  }}
+                  onClick={() => showMonth(r.ym)}
                 >
                   {(i === 0 || r.m === 12 || rows[i - 1] === null) && <span className="y">{r.y}</span>}
                   <span className="tip">
@@ -287,7 +320,7 @@ export function DiaryApp({
                   if (e.key === "Enter" && results[0]) go(results[0].k);
                 }}
               />
-              {(cur !== today || view !== today.slice(0, 7)) && (
+              {(cur !== today || view !== today.slice(0, 7) || range !== null) && (
                 <button
                   className="now"
                   type="button"
@@ -316,7 +349,7 @@ export function DiaryApp({
                   {results.map((r) => {
                     const q = parse(r.k);
                     return (
-                      <li key={r.k} className={`hit ${r.k === cur ? "sel" : ""}`} onClick={() => go(r.k)}>
+                      <li key={r.k} className={`hit ${r.k === cur && range === null ? "sel" : ""}`} onClick={() => go(r.k)}>
                         <div className="d">
                           {q.y}
                           <br />
@@ -338,7 +371,7 @@ export function DiaryApp({
                 monthKeys.map((k) => {
                   const q = parse(k);
                   return (
-                    <li key={k} className={k === cur ? "sel" : ""} onClick={() => go(k)}>
+                    <li key={k} className={k === cur && range === null ? "sel" : ""} onClick={() => go(k)}>
                       <div className="d">
                         {q.d}
                         <small>{q.w}</small>
@@ -352,6 +385,22 @@ export function DiaryApp({
             </ul>
           </div>
         </section>
+        {range !== null ? (
+          <DiaryStats
+            days={days}
+            flat={flat}
+            today={today}
+            range={range}
+            view={view}
+            onRange={(r) => window.history.replaceState(null, "", href(cur, r))}
+            onGo={go}
+            onView={(ym) => {
+              showMonth(ym);
+              if (window.matchMedia("(max-width: 900px)").matches) setShowIndex(true);
+            }}
+            onClose={toggleStats}
+          />
+        ) : (
         <section className="page right">
           <header className="dh">
             <div className="num">{p.d}</div>
@@ -430,6 +479,7 @@ export function DiaryApp({
             </div>
           </div>
         </section>
+        )}
       </div>
       {zoom !== null && images[zoom] && (
         <div className="zoom" role="dialog" aria-label="查看图片" onClick={() => setZoom(null)}>
