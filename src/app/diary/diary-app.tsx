@@ -187,18 +187,23 @@ export function DiaryApp({
     return () => window.removeEventListener("keydown", onKey);
   });
 
+  const lower = useMemo(() => new Map([...flat].map(([k, t]) => [k, t.toLowerCase()])), [flat]);
+  const words = useMemo(() => [...new Set(query.toLowerCase().split(/\s+/).filter(Boolean))], [query]);
+  const mark = new RegExp(`(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "i");
   const results = useMemo(() => {
-    if (!query) return [];
-    const out: { k: string; before: string; after: string; cut: boolean }[] = [];
-    for (let i = dataKeys.length - 1; i >= 0 && out.length < 40; i--) {
-      const t = flat.get(dataKeys[i]) ?? "";
-      const at = t.indexOf(query);
-      if (at < 0) continue;
-      const from = Math.max(0, at - 10);
-      out.push({ k: dataKeys[i], before: t.slice(from, at), after: t.slice(at + query.length, at + query.length + 60), cut: from > 0 });
+    if (!words.length) return [];
+    const out: { k: string; text: string; cut: boolean }[] = [];
+    for (let i = dataKeys.length - 1; i >= 0; i--) {
+      const k = dataKeys[i];
+      const low = lower.get(k) ?? "";
+      const tags = byDate.get(k)?.tags.map((g) => g.toLowerCase()) ?? [];
+      if (!words.every((w) => low.includes(w) || tags.some((g) => g.includes(w)))) continue;
+      const at = Math.min(...words.map((w) => low.indexOf(w)).filter((n) => n >= 0));
+      const from = Number.isFinite(at) ? Math.max(0, at - 10) : 0;
+      out.push({ k, text: (flat.get(k) ?? "").slice(from, from + 80), cut: from > 0 });
     }
     return out;
-  }, [query, dataKeys, flat]);
+  }, [words, dataKeys, lower, byDate, flat]);
 
   const [vy, vm] = view.split("-").map(Number);
   const p = parse(cur);
@@ -382,9 +387,7 @@ export function DiaryApp({
                         </div>
                         <p>
                           {r.cut && "…"}
-                          {r.before}
-                          <mark>{query}</mark>
-                          {r.after}
+                          {r.text.split(mark).map((s, i) => (i % 2 ? <mark key={i}>{s}</mark> : s))}
                         </p>
                       </li>
                     );
