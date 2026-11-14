@@ -367,6 +367,29 @@
 .diary .cal button.has:hover b {
   background: var(--rule);
 }
+.diary .cal button.off.prior {
+  opacity: 1;
+}
+.diary .cal button.off.prior:hover b {
+  background: var(--wash);
+}
+.diary .cal button.prior b {
+  position: relative;
+}
+.diary .cal button.prior b::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 3px;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 50%;
+  background: var(--ink3);
+}
+.diary .cal button.sel.prior b::after {
+  background: var(--paper);
+}
 .diary .cal button.today b {
   box-shadow: inset 0 0 0 1px var(--acc);
   opacity: 1;

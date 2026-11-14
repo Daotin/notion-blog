@@ -195,12 +195,15 @@ export function DiaryApp({
   for (let d = 1; d <= monthDays; d++) {
     const k = `${view}-${pad(d)}`;
     const has = byDate.has(k);
+    const years = [];
+    for (let y = Number(keys[0].slice(0, 4)); y < vy; y++) if (byDate.has(`${y}${k.slice(4)}`)) years.push(y);
     calendar.push(
-      has || k === today ? (
+      has || k === today || years.length ? (
         <button
           key={k}
           type="button"
-          className={`${has ? "has" : "off"} ${k === today ? "today" : ""} ${k === cur && range === null ? "sel" : ""}`}
+          className={`${has ? "has" : "off"} ${years.length ? "prior" : ""} ${k === today ? "today" : ""} ${k === cur && range === null ? "sel" : ""}`}
+          title={years.length ? `往年今日：${years.join("、")}` : undefined}
           onClick={() => go(k)}
         >
           <b>{d}</b>
