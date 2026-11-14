@@ -653,19 +653,15 @@
   color: var(--acc);
 }
 .diary .shots {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(var(--c), minmax(0, 1fr));
   gap: 6px;
-  margin-top: 20px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.diary .shots::-webkit-scrollbar {
-  display: none;
+  margin-top: 16px;
 }
 .diary .shots img {
-  height: 220px;
-  width: auto;
-  flex: none;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
   border-radius: 3px;
   background: var(--wash);
   cursor: zoom-in;
@@ -693,10 +689,8 @@
   color: rgb(255 255 255 / 0.8);
 }
 .diary .shots.one img {
-  height: auto;
-  width: 100%;
+  aspect-ratio: auto;
   max-height: 340px;
-  object-fit: cover;
 }
 .diary .av {
   margin-top: 14px;
@@ -1143,8 +1137,8 @@
   .diary .num {
     font-size: 60px;
   }
-  .diary .shots img {
-    height: 180px;
+  .diary .shots.many {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .diary .sh {
     gap: 12px;

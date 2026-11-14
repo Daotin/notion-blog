@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { DiaryDay, DiaryMedia, DiaryProblem } from "@/lib/diary/data";
-import { plainText, renderBody, splitEntries } from "@/lib/diary/markdown";
+import { imagePaths, plainText, renderBody, splitEntries } from "@/lib/diary/markdown";
 import { DiaryStats } from "./diary-stats";
 
 const HUE = [0, 255, 345, 125, 8, 150, 200, 275, 100, 75, 30, 50, 175];
@@ -129,7 +129,29 @@ export function DiaryApp({
     if (listRef.current) listRef.current.scrollTop = 0;
   };
   const day = byDate.get(cur);
-  const images = day?.media.filter((m) => m.type === "image") ?? [];
+  const dayImages = day?.media.filter((m) => m.type === "image") ?? [];
+  const byPath = new Map(dayImages.map((m) => [m.path, m]));
+  const placed = day ? imagePaths(day.markdown).flatMap((path) => byPath.get(path) ?? []) : [];
+  const rest = dayImages.filter((m) => !placed.includes(m));
+  const images = [...placed, ...rest];
+  const shots = (list: DiaryMedia[], key: number) =>
+    list.length > 0 && (
+      <div
+        key={key}
+        className={`shots ${list.length === 1 ? "one" : list.length > 4 ? "many" : ""}`}
+        style={{ "--c": Math.min(list.length, 5) } as CSSProperties}
+      >
+        {list.map((m) => (
+          <img
+            key={m.block_id}
+            src={list.length > 4 && m.thumb ? `/diary/${m.thumb}` : mediaUrl(m)}
+            alt=""
+            loading="lazy"
+            onClick={() => setZoom(images.indexOf(m))}
+          />
+        ))}
+      </div>
+    );
   const prevKey = keys.findLast((k) => k < cur);
   const nextKey = keys.find((k) => k > cur);
 
@@ -441,7 +463,7 @@ export function DiaryApp({
               {entries.map((e, i) => (
                 <div className="entry" key={i}>
                   {e.time && <div className="clock">{e.time}</div>}
-                  <div className="text">{renderBody(e.body)}</div>
+                  <div className="text">{renderBody(e.body, (paths, key) => shots(paths.flatMap((path) => byPath.get(path) ?? []), key))}</div>
                 </div>
               ))}
               {cur === today ? (
@@ -457,13 +479,7 @@ export function DiaryApp({
               ) : (
                 !day && <p className="write">这一天没有日记。</p>
               )}
-              {images.length > 0 && (
-                <div className={`shots ${images.length === 1 ? "one" : ""}`}>
-                  {images.map((m, i) => (
-                    <img key={m.block_id} src={mediaUrl(m)} alt="" loading="lazy" onClick={() => setZoom(i)} />
-                  ))}
-                </div>
-              )}
+              {shots(rest, -1)}
               {others.length > 0 && (
                 <div className="av">
                   {others.map((m) =>

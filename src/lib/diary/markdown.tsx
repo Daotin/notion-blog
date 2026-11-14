@@ -2,6 +2,8 @@ import { Fragment, type ReactNode } from "react";
 
 const TIME = /^###\s+((?:\d{4}-\d{2}-\d{2}\s+)?\d{1,2}:\d{2})\s*$/;
 const MEDIA = /!\[[^\]]*\]\(media\/[^)\s]+\)|<(video|audio)\b[^>]*><\/\1>|<(video|audio)\b[^>]*\/>/g;
+const AV = /<(video|audio)\b[^>]*><\/\1>|<(video|audio)\b[^>]*\/>/g;
+const IMG = /^!\[[^\]]*\]\((media\/[^)\s]+)\)$/;
 const INLINE = /\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(([^)\s]+)\)|<br\s*\/?>|\\([!-/:-@[-`{-~])/g;
 const LIST = /^(\t*)([-*]|\d+\.)\s+(\[[ xX]\]\s+)?(.*)$/;
 const RULE = /^(-{3,}|\*{3,}|(\*\s*){3,})$/;
@@ -11,7 +13,7 @@ export type Entry = { time: string | null; body: string };
 export function splitEntries(markdown: string): Entry[] {
   const entries: Entry[] = [];
   let cur: { time: string | null; lines: string[] } = { time: null, lines: [] };
-  for (const line of markdown.replace(MEDIA, "").split("\n")) {
+  for (const line of markdown.replace(AV, "").split("\n")) {
     const m = line.match(TIME);
     if (m) {
       if (cur.time !== null || cur.lines.some((l) => l.trim())) entries.push({ time: cur.time, body: cur.lines.join("\n") });
@@ -83,7 +85,11 @@ function renderList(items: Item[], ordered: boolean, key: number): ReactNode {
   );
 }
 
-export function renderBody(body: string): ReactNode {
+export function imagePaths(markdown: string) {
+  return markdown.split("\n").flatMap((l) => l.trim().match(IMG)?.[1] ?? []);
+}
+
+export function renderBody(body: string, images: (paths: string[], key: number) => ReactNode): ReactNode {
   const lines = body.split("\n");
   const out: ReactNode[] = [];
   let k = 0;
@@ -91,6 +97,18 @@ export function renderBody(body: string): ReactNode {
     const line = lines[i];
     const trimmed = line.trim();
     if (!trimmed) continue;
+    if (IMG.test(trimmed)) {
+      const paths: string[] = [];
+      for (; i < lines.length; i++) {
+        const t = lines[i].trim();
+        const m = t.match(IMG);
+        if (m) paths.push(m[1]);
+        else if (t) break;
+      }
+      i--;
+      out.push(images(paths, k++));
+      continue;
+    }
     if (trimmed.startsWith("```")) {
       const code: string[] = [];
       while (++i < lines.length && !lines[i].trim().startsWith("```")) code.push(lines[i]);
